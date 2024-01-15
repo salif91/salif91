@@ -1,0 +1,67 @@
+{% extends 'admin_template/base.html' %}
+
+{% block main_content %}
+
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Liste des enseignants</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+            <li class="breadcrumb-item active">Tables</li>
+        </ol>
+        <div class="card mb-4">
+            <div class="card-body">
+                <a href="{% url 'add_personnel' %}" class="btn btn-success" ><i class="fa fa-plus"></i> Enregistrer un enseignant</a>
+                .
+            </div>
+        </div>
+       
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                DataTable Example
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Noms</th>
+                            <th>Prenoms</th>
+                            <th>Adresse</th>
+                            <th>Dernière connexion</th>
+                            <th>Email</th>
+                            <th>Telephone</th>
+                            <th>Date d'ajout</th>
+                            <th>Action de Modifications</th>
+                            <th>Actions de Suppressions</th>
+                        </tr>
+                    </thead>
+                   
+                    <tbody>
+                        {% for p in personnel %}
+                        <tr>
+                            <td>{{p.admin.id}}</td>
+                            <td>{{p.admin.last_name}}</td>
+                            <td>{{p.admin.first_name}}</td>
+                            <td>{{p.adresse}}</td>
+                            <td>{{p.admin.last_login}}</td>
+                            <td>{{p.admin.email}}</td>
+                            <td>{{p.telephone}}</td>
+                            <td>{{p.admin.date_joined}}</td>
+                            <td > <a href="/edit_personnel/{{p.admin.id}}" class="btn btn-primary"> modifier</a></td>
+                            <td > <a href="/supprimer_personnel/{{p.admin.id}}" class="btn btn-danger"> <i class="fa fa-trash" aria-hidden="true"></i> supprimer</a></td> 
+                        </tr>
+                        {% endfor %}
+
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock main_content %}

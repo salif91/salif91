@@ -1,0 +1,41 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    
+</head>
+<body>
+    
+    <div class="login-page">
+        
+        <div class="form">
+          <form class="register-form">
+            
+            <input type="text" placeholder="name" name="username"/>
+            <input type="password" placeholder="password" name="password"/>
+            <input type="text" placeholder="email address"/>
+            <button>create</button>
+            <p class="message">Already registered? <a href="#">Sign In</a></p>
+          </form>
+          <form class="login-form" action="{% url 'register' %}" method="post">
+            {%csrf_token %}
+            <input type="text" name="first_name" placeholder="nom">
+            <input type="text" name="last_name" placeholder="prenom">
+            <input type="text" placeholder="nom d'utlisateur" name="username" />
+            <input type="password" placeholder="saisissez un mot de passe " name="password"/>
+            <input type="password" name="password2" placeholder="confirmer le mot de passe">
+            <input type="email" name="email" placeholder="adresse email">
+            <button >inscription</button>
+            <p class="message">connexion <a href="{% url 'login' %}">se connecter</a></p>
+            
+          </form>
+        </div>
+      </div>
+      <script src="{% static 'css/login.js' %}"></script>
+</body>
+
+</html>

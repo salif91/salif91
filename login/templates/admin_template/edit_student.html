@@ -1,0 +1,102 @@
+{% extends 'admin_template/base.html' %}
+
+{% block main_content %}
+
+
+<main>
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-7">
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header"><h3 class="text-center font-weight-light my-4">Modification de l'etudiant  {{student.admin.first_name}} {{student.admin.last_name}}</h3></div>
+                                <div class="card-body">
+                                    <form role="form" method="post" action="{% url 'edit_student_save' %}">
+                                        {% csrf_token %}
+                                        
+                                                <div class="mb-3">
+                                                    <label for="inputFirstName">Prenoms</label>
+                                                    <input class="form-control" id="nom" type="text" placeholder="prenom l'etuduiant" name="first_name" value="{{student.admin.first_name}}" />
+                                                    
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="inputFirstName">Nom</label>
+                                                    <input class="form-control" id="nom" type="text" placeholder="nom de l'etudiant" name="last_name" value="{{student.admin.last_name}}" />
+                                                    
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="inputFirstName">Nom d'utilisateur</label>
+                                                    <input class="form-control" id="nom" type="text" placeholder="nom d'utilisateur" name="username" value="{{student.admin.username}}" />
+                                                    <input type="hidden" name="student_id" value="{{student.admin.id}}">
+                                                    
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="inputFirstName">Email</label>
+                                                    <input class="form-control" id="nom" type="text" placeholder="email" name="email" value="{{student.admin.email}}"/>
+                                                    
+                                                   
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="inputFirstName">Adresse</label>
+                                                    <input class="form-control" id="nom" type="text" placeholder="Adresse" name="adresse" value="{{student.adresse}}"/>
+                                                    
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="inputFirstName">Telephone</label>
+                                                    <input class="form-control" id="nom" type="text" placeholder="telephone" name="telephone" value="{{student.telephone}}" />
+                                                    
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="ecole"></label>
+                                                   <select class="form-select form-select- mb-3" name="ecole" >
+                                                    {% for e in ecoles %}
+                                                    <option value="{{ e.id }}" {% if e.id == student.ecole.id %} selected {% endif %}>{{ e.nom }}</option>
+                                                    {% endfor %}
+                                                   </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="classe"></label>
+                                                   <select class="form-select form-select- mb-3" name="classe">
+                                                    {% for c in classes %}
+                                                    <option value="{{c.id}}" {% if c.id  ==  student.classe.id %} selected {% endif %}>{{c.nom}}</option>
+                                                    {% endfor %}
+                                                   </select>
+                                                </div>
+                                                
+                                            
+                                       
+                                       
+                                        
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-lg btn-success"> modifier</button>
+                                        </div>
+                                    </form>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <div id="layoutAuthentication_footer">
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms &amp; Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</main>
+
+{% endblock main_content %}

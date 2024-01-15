@@ -1,0 +1,57 @@
+{% extends 'admin_template/base.html' %}
+
+{% block main_content %}
+
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Listes des matières </h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+            <li class="breadcrumb-item active">Tables</li>
+        </ol>
+        <div class="card mb-4">
+            <div class="card-body">
+               <a href="{% url 'add_matiere' %}" class="btn btn-success" ><i class="fa fa-plus"></i> ajouter une matière</a>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                DataTable Example
+            </div>
+            <div class="card-body">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom matière</th>
+                            <th>Actions de Modifications</th>
+                            <th>Actions de Suppressions</th>
+                           
+                        </tr>
+                    </thead>
+                   
+                    <tbody>
+                        {% for m in matiere %}
+                        <tr>
+                            <td>{{m.id}}</td>
+                            <td>{{m.nom}}</td>
+                            
+                            <td > <a href="/edit_matiere/{{m.id}}" class="btn btn-primary"> modifier</a></td>
+                            <div class="col-md-6">
+                                <td> <a class="btn btn-danger" href="/delete_matiere/{{m.id}}"><i class="fa fa-trash"></i> supprimer</a></td>
+                            </div>
+                            
+                        </tr>
+                        {% endfor %}
+
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock main_content %}

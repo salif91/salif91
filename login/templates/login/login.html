@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    
+</head>
+<body>
+    <div class="login-page">
+        <div class="form">
+            
+          <form class="register-form">
+            
+            <input type="text" placeholder="name" name="username"/>
+            <input type="password" placeholder="password" name="password"/>
+            <input type="text" placeholder="email address"/>
+            <button>create</button>
+            <p class="message">Already registered? <a href="#">Sign In</a></p>
+          </form>
+          <form class="login-form" action="{% url 'login' %}" method="post">
+            {%csrf_token %}
+            <input type="text" placeholder="username" name="username"/>
+            <input type="password" placeholder="password" name="password"/>
+            <button >login</button>
+            <br>
+            <div class="col-md-6">
+              {% if messages %}
+              {% for message in messages %}
+                  {% if message.tags == 'success' %}
+                      <div class="alert alert-success" role="alert">                      
+                         <em>{{ message }}</em>
+                      </div>
+                  {% endif %}
+                  {% if message.tags == 'error' %}
+                      <div class="alert alert-warning" role="alert">                        
+                        <em>{{ message }}</em>
+                      </div>
+                  {% endif %}
+              {% endfor %}
+           {% endif %}
+            <p class="message">vous n'etes pas inscrits? <a href="{%url 'register' %}">créer un compte</a></p>
+          </form>
+        </div>
+      </div>
+      <script src="{% static 'css/login.js' %}"></script>
+</body>
+</html>
