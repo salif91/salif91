@@ -26,7 +26,7 @@ def user_type_required(user_type):
         return _wrapped_view
     return decorator
 
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
