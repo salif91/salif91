@@ -10,24 +10,21 @@
             <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
             <li class="breadcrumb-item active">Tables</li>
         </ol>
-        <div class="card mb-4">
-            <div class="card-body">
+        
+            <div class="mt-2 mb-2">
                <a href="{% url 'add_classe' %}" class="btn btn-success" ><i class="fa fa-plus"></i> ajouter une classe</a>
             </div>
-        </div>
+        
         <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-table me-1"></i>
-                
-            </div>
+            
             <div class="card-body">
                 <table id="datatablesSimple">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Nom Classe</th>
-                            <th>modifier</th>
-                            <th>voir</th>
+                            <th >ACtions</th>
+                            
                            
                         </tr>
                     </thead>
@@ -37,8 +34,10 @@
                         <tr>
                             <td>{{c.id}}</td>
                             <td>{{c.nom}}</td>
-                            <td> <a href="" class="btn btn-primary"> modifier</a></td>
-                            <td> <a href="{% url 'list_etudiant_par_classe' c.id %}" class="btn btn-primary"><i class="fa fa-eye" aria-hidden="true"></i> Etudiants</a></td>
+                            <td> 
+                                <a href="" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                                <a href="{% url 'list_etudiant_par_classe' c.id %}" class="btn btn-primary"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                            </td>
                         </tr>
                         {% endfor %}
 

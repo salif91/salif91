@@ -1,0 +1,57 @@
+{% extends 'admin_template/base.html' %}
+
+{% block main_content %}
+
+
+<main>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Listes des Emplois du Temps par Classe </h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+            <li class="breadcrumb-item active">Tables</li>
+        </ol>
+        <div class="card mb-4">
+            <div class="card-body">
+               <a href="{% url 'ajouter_matiere' %}" class="btn btn-success" ><i class="fa fa-plus"></i> Créer Emploi du temps </a>
+            </div>
+        </div>
+        {% for classe, emplois_du_temps in emplois_par_classe.items %}
+        <div class="card mb-4">
+           
+            <div class="card-body">
+                
+                <h2>{{ classe }}</h2>
+                <table class="datatablesSimple" >
+                    <thead>
+                        <tr>
+                            <th>Matière</th>
+                            <th>Heure début</th>
+                            <th>Heure fin</th>
+                            <th>Jour</th>
+                            <th>Actions</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emploi in emplois_du_temps %}
+                        <tr>
+                            <td>{{ emploi.matiere }}</td>
+                            <td>{{ emploi.heure_debut }}</td>
+                            <td>{{ emploi.heure_fin }}</td>
+                            <td>{{ emploi.jour }}</td>
+                            <td>
+                                <a href="" class="btn btn-primary "><i class="fa fa-edit"></i></a>
+                                <a href="" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                <a href="" class="btn bn-secondary" style="background-color: green;"><i class="fa fa-print" style="color: white;"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+
+{% endblock main_content %}

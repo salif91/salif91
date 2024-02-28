@@ -10,6 +10,7 @@
 </head>
 <body>
     <div class="login-page">
+      
         <div class="form">
             
           <form class="register-form">
@@ -22,9 +23,16 @@
           </form>
           <form class="login-form" action="{% url 'login' %}" method="post">
             {%csrf_token %}
-            <input type="text" placeholder="username" name="username"/>
-            <input type="password" placeholder="password" name="password"/>
-            <button >login</button>
+            <div class="mt-5">
+              <h2 style="color: rgb(60, 210, 30);">
+                
+                Connexion
+              </h2>
+              
+            </div>
+            <input type="text" placeholder="identifiant " name="username"/>
+            <input type="password" placeholder="mot de passe" name="password"/>
+            <button >se connecter</button>
             <br>
             <div class="col-md-6">
               {% if messages %}
@@ -41,7 +49,7 @@
                   {% endif %}
               {% endfor %}
            {% endif %}
-            <p class="message">vous n'etes pas inscrits? <a href="{%url 'register' %}">créer un compte</a></p>
+            
           </form>
         </div>
       </div>

@@ -11,19 +11,47 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-7">
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header"><h3 class="text-center font-weight-light my-4">ajouter une matièree</h3></div>
+                                <div class="card-header"><h3 class="text-center font-weight-light my-4">Transferer un etudiant</h3></div>
                                 <div class="card-body">
-                                    <form role="form" method="post" action="{% url 'add_matiere_save' %}">
+                                    <form role="form" method="post" action="{% url 'transferer_etudiant_save' %}" >
                                         {% csrf_token %}
                                         
-                                                <div class="mb-3">
-                                                    <label for="inputFirstName">Nom de la matiere</label>
-                                                    <input class="form-control" id="nom" type="text" placeholder="nom de la matière" name="nom" />
-                                                    
-                                                </div>
                                             
+                                             
+                                                <div class="mb-3">
+                                                    <label for="student"></label>
+                                                   <select class="form-select form-select-lg mb-3" name="student" multiple >
+                                                    {% for s in students %}
+                                                    <option value="{{s.id}}">{{s.admin.first_name}} {{s.admin.last_name}} / {{s.classe}}</option>
+                                                    {% endfor %}
+                                                   </select>
+                                                </div>
 
-                                          
+                                                <div class="mb-3">
+                                                    <label for="classe"></label>
+                                                   <select class="form-select form-select-lg mb-3" name="classe">
+                                                    {% for c in classes %}
+                                                    <option value="{{c.id}}">{{c.nom}}</option>
+                                                    {% endfor %}
+                                                   </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="session"></label>
+                                                   <select class="form-select form-select-lg mb-3" name="session">
+                                                    {% for s in sessions %}
+                                                    <option value="{{s.id}}">{{s.debut}} à {{s.fin}}</option>
+                                                    {% endfor %}
+                                                   </select>
+                                                </div>
+                                               
+
+                                              
+                                        
+                                        <div class="d-grid gap-2 ">
+                                            <button  class="btn btn-lg btn-success"> Transferer</button>
+                                        </div>
+
                                         <div class="mb-3">
                                             {% if messages %}
                                             {% for message in messages %}
@@ -39,17 +67,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                          {% endif %}
-                                           
                                         </div>
-                                           
-                                            <div class="d-grid gap-2">
-                                            <button  class="btn btn-success"> Ajouter</button>
-                                        </div>
-                                       
-                                        
-                                       
-                                            
-                                        
                                     </form>
                                 </div>
                                

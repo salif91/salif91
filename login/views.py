@@ -3,7 +3,7 @@ from django.contrib.auth.models import auth,  User
 from.forms import LoginForm, AddSchoolForm
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
-from ecole.models import Ecole, Etudiant, CustomUser, Classe, Matiere, Personnel, Session, Resultat
+from ecole.models import Ecole, Etudiant, CustomUser, Classe, Matiere, Personnel, Session, Resultat, EmploiDuTemps
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import never_cache
@@ -14,6 +14,9 @@ from django.http import HttpResponseForbidden
 from django.core.cache import cache
 from django.contrib.auth import logout
 from django.views.decorators.vary import vary_on_cookie
+import random
+import string
+
 
 def user_type_required(user_type):
     def decorator(view_func):
@@ -22,7 +25,7 @@ def user_type_required(user_type):
             if request.user.user_type == user_type:
                 return view_func(request, *args, **kwargs)
             else:
-                return HttpResponseForbidden("vous n'etes pas Autorise acceder ici")
+                return HttpResponseForbidden("vous n'etes pas Autorisé à acceder ici")
         return _wrapped_view
     return decorator
 
@@ -37,11 +40,11 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             user_type = user.user_type
-            if user.user_type == "1":
+            if user.user_type == '1':
                 return redirect('adminpage')
-            elif user.user_type =="2":
+            elif user.user_type =='2':
                 return redirect('add_result')    
-            elif user.user_type == "3":
+            elif user.user_type == '3':
                 return redirect('vue_etudiant')
             else:
                 return redirect('adminpage')
@@ -90,7 +93,7 @@ def edit_student(request, student_id):
     student= Etudiant.objects.get(admin=student_id)
     return render(request, 'admin_template/edit_student.html', {'student':student, 'ecoles':ecoles, 'classes':classes})
 
-@user_type_required('1')
+
 def edit_personnel(request,pers_id):
     ecole =Ecole.objects.all()
     personnel= Personnel.objects.get(admin=pers_id)
@@ -102,7 +105,7 @@ def delete_personnel(request,pers_id):
     personnel.delete()
     return redirect('manage_personnel')
 
-@user_type_required('1')
+
 def edit_personnel_save(request):
     if request.method == 'POST':
         pers_id = request.POST.get('pers_id',)
@@ -136,11 +139,20 @@ def edit_personnel_save(request):
         except:
             messages.error(request, "modification echoué")
             return redirect('manage_personnel')
+@user_type_required('2')            
 @login_required()   
 def personnel_add_result(request):
     matiere= Matiere.objects.filter(personnel= request.user.id)
     session = Session.objects.all()
-    student= Etudiant.objects.all()
+    classe_list=[]
+    for m in matiere:
+        classe= Classe.objects.get(id=m.classe.id)
+        classe_list.append(classe.id)
+    final_classe= []
+    for classe in classe_list:
+        if classe not in final_classe:
+            final_classe.append(classe)    
+    student= Etudiant.objects.filter(classe__in=final_classe)
     return render(request, 'admin_template/add_result.html', {'matiere':matiere, 'session':session, 'student': student})
 
 def save_result(request):
@@ -205,6 +217,7 @@ def edit_student_save(request):
             return redirect('manage_student')
 
 @login_required()
+@user_type_required('3')
 def vue_etudiant(request):
     student = Etudiant.objects.get(admin=request.user.id)
     
@@ -245,20 +258,27 @@ def add_student_save(request):
         telephone = request.POST.get('telephone')
         ecole= request.POST.get('ecole')
         classe= request.POST.get('classe')
+        session= request.POST.get('session')
+        profile_pic= request.FILES.get('profile_pic')
+        
     
       #  try:
-        user = CustomUser.objects.create_user(first_name= first_name, last_name= last_name ,username=username,password=password,email=email, user_type=3)
+        user = CustomUser.objects.create_user(first_name= first_name, last_name= last_name ,username=username,password=password,email=email, user_type='3')
         user.etudiant.adresse=adresse
         user.etudiant.telephone=telephone
+       
         ecole_obj= Ecole.objects.get(id = ecole)
         user.etudiant.ecole=ecole_obj
         classe_obj= Classe.objects.get(id= classe)
         user.etudiant.classe=classe_obj
+        session_obj= Session.objects.get(id=session)
+        user.etudiant.session=session_obj
+        user.etudiant.profile_pic=profile_pic
         user.save()
 
         send_mail(
            subject= 'Inscription ',
-           message=" votre inscription a bien été pris en compte, voici vos cordonnées pour vous identifier sur systeme " + 'username = '+user.username + ' password = '+user.password,
+           message=" votre inscription a bien été pris en compte, voici vos cordonnées pour vous identifier sur systeme " + 'username = '+user.username ,
            from_email='salifsorytra@gmail.com',
            recipient_list=[email,],
            )
@@ -299,27 +319,41 @@ def edit_matiere_save(request):
             classe = Classe.objects.get(id=classe)
             matiere.classe= classe
             matiere.save()
-            return HttpResponse('modifucation de'+matiere.nom)
+            return redirect('manage_matiere')
         except:
             
             return HttpResponse("non modifié")
 
 
-
-@user_type_required('1')         
-def add_matiere(request):
+def affecter_matiere(request):
     classe = Classe.objects.all()
-    pers= CustomUser.objects.filter(user_type=2)
-    return render(request, 'admin_template/add_matiere.html', {'classe': classe, 'pers':pers})
+    pers= CustomUser.objects.filter(user_type='2')
+    return render(request, 'admin_template/ajouter_matiere.html', {'classe':classe, 'pers':pers, })
+
+def affecter_matiere_save(request):
+    if request.method == 'POST':
+        matiere = request.POST.get('matiere')
+        classe = request.POST.get('classe')
+        classeobj= Classe.objects.get(id=classe)
+        personnel = request.POST.get('personnel')
+        personnelobj= CustomUser.objects.get(id=personnel)
+        try:
+            matiere= Matiere(nom=matiere, personnel=personnelobj, classe=classeobj)
+            matiere.save()
+            messages.success(request,'Affectation reussie')    
+        except:
+            return HttpResponse('impossible')
+    return redirect('ajouter_matiere')           
+
+def add_matiere(request):
+    
+    return render(request, 'admin_template/add_matiere.html', )
 def add_matiere_save(request):
     if request.method == 'POST':
         nom= request.POST.get('nom')
-        classe_id = request.POST.get('classe')
-        classe= Classe.objects.get(id=classe_id)
-        pers_id = request.POST.get('personnel')
-        personnel= CustomUser.objects.get(id=pers_id)
+        
         try:
-            matiere= Matiere(nom=nom, classe= classe, personnel=personnel)
+            matiere= Matiere(nom=nom, )
             matiere.save()
             messages.success(request,"Matière ajoutée avec succès")
             return redirect('add_matiere')
@@ -327,6 +361,7 @@ def add_matiere_save(request):
             messages.error(request, "Matière non ajoutée")
             return redirect('add_matiere')
 
+@login_required
 @user_type_required('1')
 def manage_matiere(request):
     matiere= Matiere.objects.all() 
@@ -354,7 +389,7 @@ def add_personnel_save(request):
         ecole= request.POST.get('ecole')
         
         try:
-            user=CustomUser.objects.create_user(first_name= first_name, last_name= last_name ,username=username,password=password,email=email, user_type=2)
+            user=CustomUser.objects.create_user(first_name= first_name, last_name= last_name ,username=username,password=password,email=email, user_type='2')
             user.personnel.adresse=adresse
             user.personnel.telephone=telephone
             ecole_objpers=Ecole.objects.get(id=ecole)
@@ -390,15 +425,17 @@ def userdetails(request):
 # Create your views here.
 
 
-@vary_on_cookie
+@cache_control(no_cache=True, max_age=0,must_revalidate=True)
 @login_required()
-@user_type_required('1')
 def admin_page(request):
-    nb_classe = Classe.objects.all().count
-    nb_etudiant= Etudiant.objects.all().count
-    nb_personnel=Personnel.objects.all().count
-    nb_matiere=Matiere.objects.all().count
-    return render(request, 'admin_template/home_content.html', {'nb_classe': nb_classe, 'nb_etudiant': nb_etudiant, 'nb_personnel':nb_personnel,'nb_matiere':nb_matiere })
+    if request.user.user_type != '1':
+        return HttpResponse('Accès interdit ici')  
+    else:    
+        nb_classe = Classe.objects.all().count
+        nb_etudiant= Etudiant.objects.all().count
+        nb_personnel=Personnel.objects.all().count
+        nb_matiere=Matiere.objects.all().count
+        return render(request, 'admin_template/home_content.html', {'nb_classe': nb_classe, 'nb_etudiant': nb_etudiant, 'nb_personnel':nb_personnel,'nb_matiere':nb_matiere })
 
 def add_school(request):
     return render(request, 'admin_template/add_school.html')
@@ -406,8 +443,9 @@ def add_school(request):
 @user_type_required('1')
 def add_student(request):
     classes = Classe.objects.all()
+    sessions=Session.objects.all()
     ecoles = Ecole.objects.all()
-    return render(request, 'admin_template/add_student.html', {'ecoles':ecoles, 'classes':classes})
+    return render(request, 'admin_template/add_student.html', {'ecoles':ecoles, 'classes':classes, 'sessions':sessions})
 
 
 def add_school_save(request):
@@ -424,4 +462,131 @@ def add_school_save(request):
             return redirect('add_school')
     else:
         return HttpResponse("non autorise") 
+
+@user_type_required('1')
+def add_session(request):
+    return render(request, 'admin_template/add_session.html')
+
+def add_session_save(request):
+    if request.method == 'POST':
+        intitule= request.POST.get('intitule')
+        debut=request.POST.get('debut')
+        fin= request.POST.get('fin')
+        try:
+            session= Session(intitule=intitule, debut=debut, fin=fin)
+            session.save()
+            messages.success(request, 'la session crée avec succès')
+            return redirect('add_session')
+        except:
+            messages.error(request, 'Impossible de créer la session')
+            return redirect('add_session')
+@user_type_required('1')
+def manage_session(request):
+    sessions= Session.objects.all()
+    return render(request, 'admin_template/manage_session.html', {'sessions': sessions})
+@user_type_required('1')
+def delete_session(request, ses_id):
+    session = Session.objects.get(id=ses_id)
+    session.delete()
+    return redirect('manage_session')
+
+@user_type_required('1')
+def edit_session(request,ses_id):
+    session= Session.objects.get(id=ses_id)
+    return render(request, 'admin_template/edit_session.html', {'session': session})
+
+#modification d'une session
+@user_type_required('1')
+def edit_session_save(request):
+    if request.method == 'POST':
+        ses_id= request.POST.get('ses_id')
+        intitule= request.POST.get('intitule')
+        debut= request.POST.get('debut')
+        fin= request.POST.get('fin')
+        try:
+          session= Session.objects.get(id=ses_id)
+          session.intitule= intitule
+          session.debut= debut
+          session.fin= fin
+          session.save()
+          messages.success(request, 'session modifiée avec succès')
+          return redirect('manage_session')
+        except:
+            messages.error(request,'session non modifiée')  
+            return redirect('manage_session')
+
+#vue de transfert dun etudiant
+@user_type_required('1')
+def transferer_etudiant(request):
+    students= Etudiant.objects.all()
+    sessions= Session.objects.all()
+    classes= Classe.objects.all()
+    return render(request, 'admin_template/transferer_etudiant.html', {'students': students, 'sessions': sessions, 'classes': classes})
+
+#multi-transfert des etudiant vers une classe 
+@user_type_required('1')
+def transferer_etudiant_save(request):
+    if request.method == 'POST':
+        student= request.POST.getlist('student')
         
+        classe= request.POST.get('classe')
+        classe_obj= Classe.objects.get(id=classe)
+        session= request.POST.get('session')
+        session_obj= Session.objects.get(id=session)
+        for st_id in student:
+            try:
+                student_obj= Etudiant.objects.get(id=st_id)
+                student_obj.classe=classe_obj
+                student_obj.session= session_obj
+                student_obj.save()
+            except Etudiant.DoesNotExist:
+                messages.error(request, f'Étudiant avec ID {st_id} non trouvé.')   
+
+        messages.success(request, 'Transfert effectué avec succès')
+        return redirect('transferer_etudiant')
+
+@user_type_required('1')
+def plan(request):  
+    
+    matieres = Matiere.objects.all()
+    classes = Classe.objects.all()
+    return render(request, 'admin_template/emploi_temps.html', {'classes': classes, 'matieres': matieres, })
+
+def plan_save(request):
+    if request.method == 'POST':
+        matiere= request.POST.get('matiere') 
+        classe= request.POST.get('classe')
+        jour= request.POST.get('jour')
+        debut= request.POST.get('heure_debut')   
+        fin= request.POST.get('heure_fin')
+        
+        matiere_obj= Matiere.objects.get(id=matiere)
+        classe_obj= Classe.objects.get(id=classe)
+        try:
+            ep= EmploiDuTemps(matiere=matiere_obj,classe=classe_obj, jour=jour, heure_debut=debut, heure_fin=fin)
+            ep.save()
+            messages.success(request, 'Emploi du temps creer avec succès pour la classe ' +classe_obj.nom)
+            return redirect('plan')
+        except:
+            messages.error (request, 'creation echoué')
+    return redirect('plan')        
+def manage(request):
+    classes = Classe.objects.all()
+   
+    # Créer un dictionnaire pour stocker les emplois du temps par classe
+    emplois_par_classe = {}
+
+     # Remplir le dictionnaire avec les emplois du temps pour chaque classe    
+    for classe in classes:
+        emplois_du_temps = EmploiDuTemps.objects.filter(classe=classe)
+        emplois_par_classe[classe] = emplois_du_temps
+
+    # Passer les données au contexte du template
+    context = {
+        'emplois_par_classe': emplois_par_classe,
+    }
+
+    emplois_par_classe = {}
+    return render(request, 'admin_template/manage_emploi.html', context)        
+    
+ 

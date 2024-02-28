@@ -10,20 +10,18 @@
             <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
             <li class="breadcrumb-item active">Tables</li>
         </ol>
-        <div class="card mb-4">
-            <div class="card-body">
-                
+        <div class="mt-2 mb-2">
                <a  href="{% url 'add_student'%}" class="btn btn-success"><i class="fa fa-plus"></i> AJOUTER</a>
-                .
-            </div>
+               <a href="{% url 'transferer_etudiant' %}" class="btn btn-success"><i class="fa fa-exchange"></i> Transfert</a>
         </div>
         <div class="card mb-4">
-            
             <div class="card-body">
                 <table id="datatablesSimple">
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>photo</th>
+                            <th>Matricule</th>
                             <th>Noms</th>
                             <th>Prenoms</th>
                             <th>Adresse</th>
@@ -40,6 +38,10 @@
                         {% for s in students %}
                         <tr>
                             <td>{{s.admin.id}}</td>
+                              <td>
+                                <img src="{{s.profile_pic.url}}" alt="" width="70" height="70">
+                            </td>
+                            <td>{{s.numero_matricule}}</td>
                             <td>{{s.admin.last_name}}</td>
                             <td>{{s.admin.first_name}}</td>
                             <td>{{s.adresse}}</td>
@@ -48,7 +50,7 @@
                             <td>{{s.telephone}}</td>
                             <td>{{s.admin.date_joined}}</td>
                             <td>{{s.classe}}</td>
-                            <td > <a href="/edit_student/{{s.admin.id}}" class="btn btn-primary"> modifier</a></td>
+                            <td > <a href="/edit_student/{{s.admin.id}}" class="btn btn-primary"> <i class="fa fa-edit"></i> </a></td>
                             
                         </tr>
                         {% endfor %}

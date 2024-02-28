@@ -15,8 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 from login import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('',views.login, name='login'),
@@ -54,7 +57,30 @@ urlpatterns = [
     path('manage_matiere/', views.manage_matiere, name='manage_matiere'),
     path('delete_matiere/<str:mat_id>/', views.delete_matiere, name='delete_matiere'),
     path('vue_etudiant/', views.vue_etudiant, name='vue_etudiant'),
-    path('resultat_etudiant/', views.resultat_etudiant, name='result_etudiant')
+    path('resultat_etudiant/', views.resultat_etudiant, name='result_etudiant'),
+    path('affecter_matiere/', views.affecter_matiere, name='ajouter_matiere'),
+    path('affecter_matiere_save', views.affecter_matiere_save, name='ajouter_matiere_save'),
+    path('add_session/', views.add_session, name='add_session'),
+    path('add_session_save', views.add_session_save, name='add_session_save'),
+    path('manage_session/', views.manage_session, name='manage_session'),
+    path('delete_session/<str:ses_id>', views.delete_session, name='delete_session'),
+    path('edit_session/<str:ses_id>', views.edit_session, name='edit_session'),
+    path('edit_session_save/', views.edit_session_save, name='edit_session_save'),
+    path('transferer_etudiant/', views.transferer_etudiant, name='transferer_etudiant'),
+    path('transferer_etudiant_save/', views.transferer_etudiant_save, name='transferer_etudiant_save'),
+    path('emploi_temps/', views.plan, name='plan'),
+    path('emploi_temps_save/', views.plan_save, name='plan_save'),
+    path('manage_emploi/', views.manage, name='manage_emploi'),
+
+
+    path('reset_password/', auth_views.PasswordResetView.as_view(), name='reset_password'),
+    path('reset_password_sent/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     
     
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

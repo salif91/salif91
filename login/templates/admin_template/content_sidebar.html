@@ -4,11 +4,12 @@
             <div class="nav">
                 <div class="sb-sidenav-menu-heading">Enregistrement</div>
                 <a class="nav-link" href="{% url 'adminpage' %}">
-                    <div class="sb-nav-link-icon"><i class="fa-duotone fa-chart-simple fa-flip"></i></div>
-                    Statistiques
+                    <div class="sb-nav-link-icon"><i class="fa fa-bar-chart fa-bounce" aria-hidden="true"></i>
+                    </div>
+                    statistiques
                 </a>
                 <a class="nav-link" href="{% url 'manage_personnel' %}">
-                    <div class="sb-nav-link-icon"><i class="fa fa-user"></i></div>
+                    <div class="sb-nav-link-icon"><i class="fas fa-chalkboard-teacher fa-bounce"></i></div>
                      enseignants
                 </a>
                 <a class="nav-link" href="{% url 'manage_student' %}">
@@ -21,8 +22,14 @@
                 </a>
 
                 <a class="nav-link" href="{% url 'manage_matiere' %}">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-book fa-shake"></i></i></div>
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-book fa-bounce"></i></i></div>
                      matières
+                </a>
+
+                <a class="nav-link" href="{% url 'manage_session' %}">
+                    <div class="sb-nav-link-icon"><i class="fa fa-clock fa-bounce" aria-hidden="true"></i>
+                    </div>
+                     sesssions
                 </a>
 
 

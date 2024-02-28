@@ -29,19 +29,20 @@
                                                 </div>
                                                 
                                                 <div class="mb-3">
-                                                    <select class="form-select form-select- mb-3" name="student">
+                                                    <label for="studentSelect" class="form-label">Sélectionner un étudiant:</label>
+                                                    <select class="form-select form-select- mb-3" id="studentSelect" name="student">
                                                         {% for st in student %}
-                                                        <option value="{{st.id}}">{{st.admin.id}} {{st.admin.first_name}} {{st.admin.last_name}} | {{st.classe}}</option>
+                                                        <option value="{{st.id}}">{{st.admin.id}} {{st.admin.first_name}} {{st.admin.last_name}} | {{st.classe}} </option>
                                                         {% endfor %}
                                                        </select>
                                                 </div>
                                             <div class="mb-3">
-                                                <input class="form-control" id="" type="text" placeholder="affecter une note de classe" name="noteclass" />
-                                                <label for="text"></label>
+                                                <input class="form-control" id="noteclass" type="text" placeholder="affecter une note de classe" name="noteclass" />
+                                                <label for="noteclass" class="form-label">Note de classe:</label>
                                             </div>
                                             <div class="mb-3">
                                                 <input class="form-control" id="" type="text" placeholder="affecter note exam" name="noteexam" />
-                                                <label for="text"></label>
+                                                <label for="noteexam" class="form-label">Note d'examen:</label>
                                             </div>
 
                                             <div class="col-md-6">
